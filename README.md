@@ -4,7 +4,7 @@ Allows you to bundle a [React](https://reactjs.org/) project with [projext](http
 
 ## Introduction
 
-[projext](https://yarnpkg.com/en/package/projext) allows you to configure a project without adding specific settings for a module bundler, then you can decide which build engine to use. This plugin is meant to be used when you are bundling a [React](https://reactjs.org/) and you are using the [Rollup](https://reactjs.org/) [build engine](https://yarnpkg.com/en/package/projext-plugin-rollup).
+[projext](https://yarnpkg.com/en/package/projext) allows you to configure a project without adding specific settings for a module bundler, then you can decide which build engine to use. This plugin is meant to be used when you are bundling a [React](https://reactjs.org/) application and you are using the [Rollup](https://reactjs.org/) [build engine](https://yarnpkg.com/en/package/projext-plugin-rollup).
 
 It adds the required presets to the [`rollup-plugin-babel`](https://yarnpkg.com/en/package/rollup-plugin-babel) configuration in order to handle [`JSX`](https://facebook.github.io/jsx/) code.
 
@@ -50,6 +50,14 @@ This new setting (`frameworkOptions.ssr`) is where you tell the plugin that the 
 
 Done, now you can `require`/`import` files from your `frontend` target on the `backend` target and everything will work.
 
+### Babel
+
+This plugin adds the [`react`](https://yarnpkg.com/en/package/babel-preset-react) preset for JSX support, and the [`external-helpers`](https://yarnpkg.com/en/package/external-helpers) plugin, for better compatibility with Rollup.
+
+### External dependencies
+
+When bundling your targets, the plugin will check if the target is for Node or if it is a browser library and automatically exclude the React packages so they don't end up on your build.
+
 ## Development
 
 Before doing anything, install the repository hooks:
@@ -63,11 +71,11 @@ yarn run hooks
 
 | Task                    | Description                         |
 |-------------------------|-------------------------------------|
-| `npm run hooks`         | Install the GIT repository hooks.   |
-| `npm test`              | Run the project unit tests.         |
-| `npm run lint`          | Lint the modified files.            |
-| `npm run lint:full`     | Lint the project code.              |
-| `npm run docs`          | Generate the project documentation. |
+| `yarn run hooks`        | Install the GIT repository hooks.   |
+| `yarn test`             | Run the project unit tests.         |
+| `yarn run lint`         | Lint the modified files.            |
+| `yarn run lint:full`    | Lint the project code.              |
+| `yarn run docs`         | Generate the project documentation. |
 
 ### Testing
 

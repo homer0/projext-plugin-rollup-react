@@ -78,6 +78,8 @@ class ProjextReactPlugin {
     /**
      * The name of the Babel preset required to add support for React's JSX.
      * @type {string}
+     * @access protected
+     * @ignore
      */
     this._babelPreset = 'react';
     /**
@@ -131,7 +133,7 @@ class ProjextReactPlugin {
     events.on(this._imagesRuleEvent, (rule, params) => (
       this._updateImagesRule(rule, params.target, targets)
     ));
-    // Add the listener for the external plugin settings event..
+    // Add the listener for the external plugin settings event.
     events.on(this._externalPluginEvent, (settings, params) => (
       this._updateExternalPluginSettings(settings, params.target)
     ));

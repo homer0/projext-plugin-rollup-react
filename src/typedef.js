@@ -6,16 +6,19 @@
 /**
  * @external {Target}
  * https://homer0.github.io/projext/typedef/index.html#static-typedef-Target
+ * @ignore
  */
 
 /**
  * @external {Targets}
  * https://homer0.github.io/projext/class/src/services/targets/targets.js~Targets.html
+ * @ignore
  */
 
 /**
  * @external {BabelHelper}
  * https://homer0.github.io/projext/class/src/services/common/babelHelper.js~BabelHelper.html
+ * @ignore
  */
 
 /**
@@ -24,6 +27,7 @@
  *                           searching for files.
  * @property {Array} exclude A list of glob patterns for paths that shouldn't be included when
  *                           searching for files.
+ * @ignore
  */
 
 /**
@@ -35,4 +39,5 @@
  * @property {?FileRuleGlobs} glob    Plugins that use an old version of `rollup-pluginutils`,
  *                                    don't have support for regular expressions for paths, so
  *                                    _"glob alternatives"_ are included on this property.
+ * @ignore
  */
