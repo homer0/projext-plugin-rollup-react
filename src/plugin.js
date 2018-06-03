@@ -1,6 +1,7 @@
 /**
- * This service is in charge of modifying a target Babel and entry settings in order to build
- * React code. It also manages the settings related to the React Hot Loader.
+ * It updates targets Babel configuration in order to add support for JSX. And if a target
+ * implements SSR, it takes care of including the paths of the target to serve on the rules
+ * for Rollup to process/transpile.
  */
 class ProjextReactPlugin {
   /**
@@ -41,24 +42,23 @@ class ProjextReactPlugin {
     this._imagesRuleEvent = 'rollup-images-rule-configuration';
     /**
      * The name of the reducer event the service will listen for in order to exclude React packages
-     * from the bundle when the target is a library.
-     * This is only for browser targets as Node targets already exclude the production
-     * dependencies as external.
+     * from the bundle when the target is Node or when is a library for the browser.
      * @type {string}
      * @access protected
      * @ignore
      */
-    this._externalPluginEvent = 'rollup-external-plugin-settings-configuration-for-browser';
+    this._externalPluginEvent = 'rollup-external-plugin-settings-configuration';
     /**
-     * The list of React packages that should never end up on the bundle if the target is a
-     * library.
+     * The list of React packages that should never end up on the bundle. For browser targets,
+     * this is only if the target is also a library.
      * @type {Array}
      * @access protected
      * @ignore
      */
-    this._externalModulesForLibraries = [
+    this._externalModules = [
       'react',
       'react-dom',
+      'react-dom/server',
     ];
     /**
      * The name of the reducer event the service will listen for in order to add support for JSX
@@ -69,15 +69,17 @@ class ProjextReactPlugin {
      */
     this._babelConfigurationEvent = 'babel-configuration';
     /**
-     * The list of Babel plugins that need to be added in order to add support for JSX.
-     * @type {Array}
+     * The required Babel plugin for the JSX integration of with Rollup.
+     * @type {string}
      * @access protected
      * @ignore
      */
-    this._babelPlugins = [
-      'transform-react-jsx',
-      'external-helpers',
-    ];
+    this._babelPlugin = 'external-helpers';
+    /**
+     * The name of the Babel preset required to add support for React's JSX.
+     * @type {string}
+     */
+    this._babelPreset = 'react';
     /**
      * The required value a target `framework` setting needs to have in order for the service to
      * take action.
@@ -99,31 +101,43 @@ class ProjextReactPlugin {
     };
   }
   /**
-   * This is the method called when the plugin is loaded by projext. It gets the `events` service
-   * and subscribes to the reducer events the plugin needs to modify in order to support JSX and
-   * SSR. It also gets the `targets` service in order to load the SSR targets information.
+   * This is the method called when the plugin is loaded by projext. It setups all the listeners
+   * for the events the plugin needs to intercept in order to add support for JSX and to include
+   * other targets paths for SSR.
+   * It also listens for the event that defines the external dependencies, because if the
+   * target type is Node or is a library, it should include the React packages as externals.
    * @param {Projext} app The projext main container.
    */
   register(app) {
+    // Get the `events` service to listen for the events.
     const events = app.get('events');
+    // Get the `targets` service to send to the methods that need to obtain information for SSR.
     const targets = app.get('targets');
+    // Get the `babelHelper` to send to the method that adds support for JSX.
+    const babelHelper = app.get('babelHelper');
+    // Add the listener for the JS files rule event.
     events.on(this._jsRuleEvent, (rule, params) => (
       this._updateJSRule(rule, params.target, targets)
     ));
+    // Add the listener for the SCSS files rule event.
     events.on(this._scssRuleEvent, (rule, params) => (
       this._updateSCSSRule(rule, params.target, targets)
     ));
+    // Add the listener for the front files rule event.
     events.on(this._fontsRuleEvent, (rule, params) => (
       this._updateFontsRule(rule, params.target, targets)
     ));
+    // Add the listener for the images files rule event.
     events.on(this._imagesRuleEvent, (rule, params) => (
       this._updateImagesRule(rule, params.target, targets)
     ));
+    // Add the listener for the external plugin settings event..
     events.on(this._externalPluginEvent, (settings, params) => (
       this._updateExternalPluginSettings(settings, params.target)
     ));
+    // Add the listener for the target Babel configuration.
     events.on(this._babelConfigurationEvent, (configuration, target) => (
-      this._updateBabelConfiguration(configuration, target)
+      this._updateBabelConfiguration(configuration, target, babelHelper)
     ));
   }
   /**
@@ -254,9 +268,12 @@ class ProjextReactPlugin {
    */
   _updateExternalPluginSettings(currentSettings, target) {
     let updatedSettings;
-    if (target.framework === this._frameworkProperty && target.library) {
+    if (
+      target.framework === this._frameworkProperty &&
+      (target.is.node || target.library)
+    ) {
       updatedSettings = Object.assign({}, currentSettings);
-      updatedSettings.external.push(...this._externalModulesForLibraries);
+      updatedSettings.external.push(...this._externalModules);
     } else {
       updatedSettings = currentSettings;
     }
@@ -266,23 +283,19 @@ class ProjextReactPlugin {
   /**
    * This method gets called when projext reduces a target Babel configuration. The method will
    * validate the target settings and add the Babel plugins needed for JSX.
-   * @param {Object} currentConfiguration The current Babel configuration for the target.
-   * @param {Target} target               The target information.
+   * @param {Object}      currentConfiguration The current Babel configuration for the target.
+   * @param {Target}      target               The target information.
+   * @param {BabelHelper} babelHelper          To update the target configuration and add the
+   *                                           required preset and plugin.
    * @return {Object} The updated configuration.
    * @access protected
    * @ignore
    */
-  _updateBabelConfiguration(currentConfiguration, target) {
+  _updateBabelConfiguration(currentConfiguration, target, babelHelper) {
     let updatedConfiguration;
     if (target.framework === this._frameworkProperty) {
-      updatedConfiguration = Object.assign({}, currentConfiguration);
-      if (!updatedConfiguration.plugins) {
-        updatedConfiguration.plugins = this._babelPlugins.slice();
-      } else {
-        updatedConfiguration.plugins.push(
-          ...this._babelPlugins.filter((plugin) => !updatedConfiguration.plugins.includes(plugin))
-        );
-      }
+      updatedConfiguration = babelHelper.addPreset(currentConfiguration, this._babelPreset);
+      updatedConfiguration = babelHelper.addPlugin(updatedConfiguration, this._babelPlugin);
     } else {
       updatedConfiguration = currentConfiguration;
     }

@@ -14,6 +14,11 @@
  */
 
 /**
+ * @external {BabelHelper}
+ * https://homer0.github.io/projext/class/src/services/common/babelHelper.js~BabelHelper.html
+ */
+
+/**
  * @typedef {Object} FileRuleGlobs
  * @property {Array} include A list of glob patterns for paths that should be included when
  *                           searching for files.
