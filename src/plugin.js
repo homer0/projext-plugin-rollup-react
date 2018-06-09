@@ -9,37 +9,14 @@ class ProjextReactPlugin {
    */
   constructor() {
     /**
-     * The name of the reducer event the service will listen for in order to add paths for
-     * SSR targets that needs to be transpiled and bundled.
+     * The name of the event triggered when the files rules of a target are created. This service
+     * will listen for it, and if the target implements SSR, it will add the other target(s) to the
+     * file rules.
      * @type {string}
      * @access protected
      * @ignore
      */
-    this._jsRuleEvent = 'rollup-js-rule-configuration';
-    /**
-     * The name of the reducer event the service will listen for in order to add paths for
-     * SSR targets that needs to be processed and bundled.
-     * @type {string}
-     * @access protected
-     * @ignore
-     */
-    this._scssRuleEvent = 'rollup-scss-rule-configuration';
-    /**
-     * The name of the reducer event the service will listen for in order to add paths for
-     * SSR targets SVG fonts that needs to be processed.
-     * @type {string}
-     * @access protected
-     * @ignore
-     */
-    this._fontsRuleEvent = 'rollup-fonts-rule-configuration';
-    /**
-     * The name of the reducer event the service will listen for in order to exclude SSR targets
-     * SVG fonts in order to avoid processing them as images.
-     * @type {string}
-     * @access protected
-     * @ignore
-     */
-    this._imagesRuleEvent = 'rollup-images-rule-configuration';
+    this._rulesEvent = 'target-file-rules';
     /**
      * The name of the reducer event the service will listen for in order to exclude React packages
      * from the bundle when the target is Node or when is a library for the browser.
@@ -47,7 +24,7 @@ class ProjextReactPlugin {
      * @access protected
      * @ignore
      */
-    this._externalPluginEvent = 'rollup-external-plugin-settings-configuration';
+    this._externalSettingsEventName = 'rollup-external-plugin-settings-configuration';
     /**
      * The list of React packages that should never end up on the bundle. For browser targets,
      * this is only if the target is also a library.
@@ -117,170 +94,41 @@ class ProjextReactPlugin {
     const targets = app.get('targets');
     // Get the `babelHelper` to send to the method that adds support for JSX.
     const babelHelper = app.get('babelHelper');
-    // Add the listener for the JS files rule event.
-    events.on(this._jsRuleEvent, (rule, params) => (
-      this._updateJSRule(rule, params.target, targets)
-    ));
-    // Add the listener for the SCSS files rule event.
-    events.on(this._scssRuleEvent, (rule, params) => (
-      this._updateSCSSRule(rule, params.target, targets)
-    ));
-    // Add the listener for the front files rule event.
-    events.on(this._fontsRuleEvent, (rule, params) => (
-      this._updateFontsRule(rule, params.target, targets)
-    ));
-    // Add the listener for the images files rule event.
-    events.on(this._imagesRuleEvent, (rule, params) => (
-      this._updateImagesRule(rule, params.target, targets)
-    ));
-    // Add the listener for the external plugin settings event.
-    events.on(this._externalPluginEvent, (settings, params) => (
-      this._updateExternalPluginSettings(settings, params.target)
-    ));
+    // Add the listener for the event that includes SSR paths.
+    events.on(this._rulesEvent, (rules, target) => {
+      this._updateTargetFileRules(rules, target, targets);
+    });
     // Add the listener for the target Babel configuration.
     events.on(this._babelConfigurationEvent, (configuration, target) => (
       this._updateBabelConfiguration(configuration, target, babelHelper)
     ));
+    // Add the listener for the external plugin settings event.
+    events.on(this._externalSettingsEventName, (settings, params) => (
+      this._updateExternals(settings, params.target)
+    ));
   }
   /**
-   * This method gets called when the Rollup plugin reduces the rule it uses to find JS files
-   * that need to be transpiled. The method validates the target settings and, if needed, it
-   * includes the paths for SSR targets.
-   * @param {FileRule} currentRule  The rule settings to find JS files.
-   * @param {Target}   target       The target information.
-   * @param {Targets}  targets      The targets service, to get the information of targets the
-   *                                one being processed may need for SSR.
-   * @return {FileRule} The updated rule.
+   * This method gets called when projext creates the file rules for a target. The method validates
+   * the target settings and, if needed, add the paths of another target for SSR.
+   * @param {TargetFilesRules} rules   The file rules for the target.
+   * @param {Target}           target  The target information.
+   * @param {Targets}          targets The targets service, to get the information of targets
+   *                                   the one being processed may need for SSR.
    * @access protected
    * @ignore
    */
-  _updateJSRule(currentRule, target, targets) {
-    let updatedRule;
+  _updateTargetFileRules(rules, target, targets) {
     if (target.framework === this._frameworkProperty) {
       const options = this._getTargetOptions(target);
-      const ssrTargets = options.ssr.map((name) => targets.getTarget(name));
-      updatedRule = Object.assign({}, currentRule);
-      updatedRule.include.push(...ssrTargets.map((targetInfo) => (
-        new RegExp(`${targetInfo.paths.source}/.*?\\.jsx?$`, 'i')
-      )));
-
-      if (updatedRule.glob) {
-        updatedRule.glob.include.push(...ssrTargets.map((targetInfo) => (
-          `${targetInfo.paths.source}/**/*.{js,jsx}`
-        )));
-      }
-    } else {
-      updatedRule = currentRule;
+      options.ssr.forEach((name) => {
+        const ssrTarget = targets.getTarget(name);
+        rules.js.addTarget(ssrTarget);
+        rules.scss.addTarget(ssrTarget);
+        rules.fonts.common.addTarget(ssrTarget);
+        rules.fonts.svg.addTarget(ssrTarget);
+        rules.images.addTarget(ssrTarget);
+      });
     }
-
-    return currentRule;
-  }
-  /**
-   * This method gets callend when the Rollup plugin reduces the rule it uses to find SCS files
-   * that need processing. The method validates the target settings and, if needed, it includes
-   * the paths for SSR targets.
-   * @param {FileRule} currentRule  The rule settings to find SCSS files.
-   * @param {Target}   target       The target information.
-   * @param {Targets}  targets      The targets service, to get the SSR targets information.
-   * @return {FileRule} The updated rule.
-   * @access protected
-   * @ignore
-   */
-  _updateSCSSRule(currentRule, target, targets) {
-    let updatedRule;
-    if (target.framework === this._frameworkProperty) {
-      const options = this._getTargetOptions(target);
-      const ssrTargets = options.ssr.map((name) => targets.getTarget(name));
-      updatedRule = Object.assign({}, currentRule);
-      updatedRule.include.push(...ssrTargets.map((targetInfo) => (
-        new RegExp(`${targetInfo.paths.source}/.*?\\.scss$`, 'i')
-      )));
-    } else {
-      updatedRule = currentRule;
-    }
-
-    return updatedRule;
-  }
-  /**
-   * This method gets called when the Rollup plugin reduces the rule it uses to find SVG fonts.
-   * The method validates the target settings and, if needed, it includes the paths for SSR
-   * targets.
-   * The reason this method only filters SVG fonts is that SVG files need to be separated in
-   * images and fonts so they don't end up on the wrong directories.
-   * @param {FileRule} currentRule  The rule settings to find fonts files.
-   * @param {Target}   target       The target information.
-   * @param {Targets}  targets      The targets service, to get the SSR targets information.
-   * @return {FileRule} The updated rule.
-   * @access protected
-   * @ignore
-   */
-  _updateFontsRule(currentRule, target, targets) {
-    let updatedRule;
-    if (target.framework === this._frameworkProperty) {
-      const options = this._getTargetOptions(target);
-      const ssrTargets = options.ssr.map((name) => targets.getTarget(name));
-      updatedRule = Object.assign({}, currentRule);
-      updatedRule.include.push(...ssrTargets.map((targetInfo) => (
-        new RegExp(`${targetInfo.paths.source}/(?:.*?/)?fonts/.*?\\.svg$`, 'i')
-      )));
-    } else {
-      updatedRule = currentRule;
-    }
-
-    return updatedRule;
-  }
-  /**
-   * This method gets called when the Rollup plugin reduces the rule it uses to find images.
-   * Different from the other methods that updates rules, after validating the target settings
-   * it doesn't _"include"_ paths for SSR targets, but it excludes them: It excludes SVG fonts
-   * files on SSR targets so they won't end up on the images diretory.
-   * @param {FileRule} currentRule  The rules settings to find images files.
-   * @param {Target}   target       The target information.
-   * @param {Targets}  targets      The targets service, to get the SSR targets information.
-   * @return {FileRule} The updated rule.
-   * @access protected
-   * @ignore
-   */
-  _updateImagesRule(currentRule, target, targets) {
-    let updatedRule;
-    if (target.framework === this._frameworkProperty) {
-      const options = this._getTargetOptions(target);
-      const ssrTargets = options.ssr.map((name) => targets.getTarget(name));
-      updatedRule = Object.assign({}, currentRule);
-      updatedRule.exclude.push(...ssrTargets.map((targetInfo) => (
-        new RegExp(`${targetInfo.paths.source}/(?:.*?/)?fonts/.*?`, 'i')
-      )));
-    } else {
-      updatedRule = currentRule;
-    }
-
-    return updatedRule;
-  }
-  /**
-   * This method gets called when the Rollup plugin reduces the settings for the modules that
-   * should be handled as external dependencies. The method validates the targate settings and
-   * if the target is a library, it pushes the list of React packages that shouldn't be bundled.
-   * @param {Object} currentSettings          The settings for external dependencies.
-   * @param {Array}  currentSettings.external The list of dependencies that should be handled as
-   *                                          external.
-   * @param {Target} target                   The target information.
-   * @return {Object} The updated settings.
-   * @access protected
-   * @ignore
-   */
-  _updateExternalPluginSettings(currentSettings, target) {
-    let updatedSettings;
-    if (
-      target.framework === this._frameworkProperty &&
-      (target.is.node || target.library)
-    ) {
-      updatedSettings = Object.assign({}, currentSettings);
-      updatedSettings.external.push(...this._externalModules);
-    } else {
-      updatedSettings = currentSettings;
-    }
-
-    return updatedSettings;
   }
   /**
    * This method gets called when projext reduces a target Babel configuration. The method will
@@ -303,6 +151,34 @@ class ProjextReactPlugin {
     }
 
     return updatedConfiguration;
+  }
+  /**
+   * This method gets called when the Rollup plugin reduces the list of modules that should be
+   * handled as external dependencies. The method validates the target settings and if it's a
+   * Node target or a browser library, it pushes the React packages to the list.
+   * @param {Object} currentSettings          The settings for external dependencies.
+   * @param {Array}  currentSettings.external The list of dependencies that should be handled as
+   *                                          external.
+   * @param {Target} target                   The target information.
+   * @return {Object} The updated settings.
+   * @access protected
+   * @ignore
+   */
+  _updateExternals(currentSettings, target) {
+    let updatedSettings;
+    if (
+      target.framework === this._frameworkProperty &&
+      (target.is.node || target.library)
+    ) {
+      updatedSettings = {
+        external: currentSettings.external.slice(),
+      };
+      updatedSettings.external.push(...this._externalModules);
+    } else {
+      updatedSettings = currentSettings;
+    }
+
+    return updatedSettings;
   }
   /**
    * Merge the default framework options with the overwrites the target may have, and return the

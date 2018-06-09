@@ -1,12 +1,17 @@
 # projext plugin for React on Rollup
 
+[![Travis](https://img.shields.io/travis/homer0/projext-plugin-rollup-react.svg?style=flat-square)](https://travis-ci.org/homer0/projext-plugin-rollup-react)
+[![Coveralls github](https://img.shields.io/coveralls/github/homer0/projext-plugin-rollup-react.svg?style=flat-square)](https://coveralls.io/github/homer0/projext-plugin-rollup-react?branch=master)
+[![David](https://img.shields.io/david/homer0/projext-plugin-rollup-react.svg?style=flat-square)](https://david-dm.org/homer0/projext-plugin-rollup-react)
+[![David](https://img.shields.io/david/dev/homer0/projext-plugin-rollup-react.svg?style=flat-square)](https://david-dm.org/homer0/projext-plugin-rollup-react)
+
 Allows you to bundle a [React](https://reactjs.org/) project with [projext](https://yarnpkg.com/en/package/projext) using the [Rollup](https://rollupjs.org/) [build engine](https://yarnpkg.com/en/package/projext-plugin-rollup).
 
 ## Introduction
 
 [projext](https://yarnpkg.com/en/package/projext) allows you to configure a project without adding specific settings for a module bundler, then you can decide which build engine to use. This plugin is meant to be used when you are bundling a [React](https://reactjs.org/) application and you are using the [Rollup](https://reactjs.org/) [build engine](https://yarnpkg.com/en/package/projext-plugin-rollup).
 
-It adds the required presets to the [`rollup-plugin-babel`](https://yarnpkg.com/en/package/rollup-plugin-babel) configuration in order to handle [`JSX`](https://facebook.github.io/jsx/) code.
+It adds the required presets to the [Babel](https://babeljs.io) configuration in order to add support for [`JSX`](https://facebook.github.io/jsx/) code.
 
 ## Information
 
@@ -67,7 +72,7 @@ Before doing anything, install the repository hooks:
 yarn run hooks
 ```
 
-### NPM/Yarn Tasks
+### Yarn/NPM Tasks
 
 | Task                    | Description                         |
 |-------------------------|-------------------------------------|
