@@ -35,7 +35,7 @@ Now, when your target gets builded, the plugin will check if the target is using
 
 Let's say you have a `backend` target with your Node server code, and a `frontend` target with your React code, and you want to require your `frontend` code on the `backend` in order to use `ReactDOM.renderToString(...)`:
 
-For your `backend` target you'll have to define its `framework` property to `react`, so the plugin can include the JSX loader, and then add an extra option to enable SSR from `backend` to `frontend`:
+For your `backend` target you'll have to define its `framework` property to `react`, so the plugin can include the JSX loader, and then make sure you included the `frontend` target on the `includeTargets` setting:
 
 ```js
 module.exports = {
@@ -43,15 +43,13 @@ module.exports = {
     backend: {
       type: 'node',
       framework: 'react',
-      frameworkOptions: {
-        ssr: ['frontend'],
-      },
+      includeTargets: ['frontend'],
     },
   },
 };
 ```
 
-This new setting (`frameworkOptions.ssr`) is where you tell the plugin that the targets on that list should also have their JSX parsed for you to use on Node.
+> `includeTargets` is a default setting provided by project. It tells the build engine that the files from the specified target(s) should also be transpiled/processed.
 
 Done, now you can `require`/`import` files from your `frontend` target on the `backend` target and everything will work.
 

@@ -19,11 +19,9 @@ describe('plugin:projextReact/main', () => {
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = 'babelHelper';
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -31,7 +29,6 @@ describe('plugin:projextReact/main', () => {
     };
     let sut = null;
     const expectedEvents = [
-      'target-file-rules',
       'babel-configuration',
       'rollup-external-plugin-settings-configuration',
     ];
@@ -50,183 +47,14 @@ describe('plugin:projextReact/main', () => {
     });
   });
 
-  it('shouldn\'t modify a target file rules if the framework setting is invalid', () => {
-    // Given
-    const events = {
-      on: jest.fn(),
-    };
-    const targets = 'targets';
-    const babelHelper = 'babelHelper';
-    const services = {
-      events,
-      targets,
-      babelHelper,
-    };
-    const app = {
-      get: jest.fn((service) => services[service]),
-    };
-    const target = {
-      framework: 'angularjs',
-    };
-    const rules = {
-      js: {
-        addTarget: jest.fn(),
-      },
-      scss: {
-        addTarget: jest.fn(),
-      },
-      fonts: {
-        common: {
-          addTarget: jest.fn(),
-        },
-        svg: {
-          addTarget: jest.fn(),
-        },
-      },
-      images: {
-        addTarget: jest.fn(),
-      },
-    };
-    let sut = null;
-    let reducer = null;
-    // When
-    sut = new ProjextReactPlugin();
-    sut.register(app);
-    [[, reducer]] = events.on.mock.calls;
-    reducer(rules, target);
-    // Then
-    expect(rules.js.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.scss.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.fonts.common.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.fonts.svg.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.images.addTarget).toHaveBeenCalledTimes(0);
-  });
-
-  it('shouldn\'t modify a target file rules if the target doesn\'t implement SSR', () => {
-    // Given
-    const events = {
-      on: jest.fn(),
-    };
-    const targets = 'targets';
-    const babelHelper = 'babelHelper';
-    const services = {
-      events,
-      targets,
-      babelHelper,
-    };
-    const app = {
-      get: jest.fn((service) => services[service]),
-    };
-    const target = {
-      framework: 'react',
-    };
-    const rules = {
-      js: {
-        addTarget: jest.fn(),
-      },
-      scss: {
-        addTarget: jest.fn(),
-      },
-      fonts: {
-        common: {
-          addTarget: jest.fn(),
-        },
-        svg: {
-          addTarget: jest.fn(),
-        },
-      },
-      images: {
-        addTarget: jest.fn(),
-      },
-    };
-    let sut = null;
-    let reducer = null;
-    // When
-    sut = new ProjextReactPlugin();
-    sut.register(app);
-    [[, reducer]] = events.on.mock.calls;
-    reducer(rules, target, targets);
-    // Then
-    expect(rules.js.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.scss.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.fonts.common.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.fonts.svg.addTarget).toHaveBeenCalledTimes(0);
-    expect(rules.images.addTarget).toHaveBeenCalledTimes(0);
-  });
-
-  it('should update a target file rules if it implements SSR ', () => {
-    // Given
-    const events = {
-      on: jest.fn(),
-    };
-    const otherTarget = 'other-target';
-    const targets = {
-      getTarget: jest.fn(() => otherTarget),
-    };
-    const babelHelper = 'babelHelper';
-    const services = {
-      events,
-      targets,
-      babelHelper,
-    };
-    const app = {
-      get: jest.fn((service) => services[service]),
-    };
-    const target = {
-      framework: 'react',
-      frameworkOptions: {
-        ssr: [otherTarget],
-      },
-    };
-    const rules = {
-      js: {
-        addTarget: jest.fn(),
-      },
-      scss: {
-        addTarget: jest.fn(),
-      },
-      fonts: {
-        common: {
-          addTarget: jest.fn(),
-        },
-        svg: {
-          addTarget: jest.fn(),
-        },
-      },
-      images: {
-        addTarget: jest.fn(),
-      },
-    };
-    let sut = null;
-    let reducer = null;
-    // When
-    sut = new ProjextReactPlugin();
-    sut.register(app);
-    [[, reducer]] = events.on.mock.calls;
-    reducer(rules, target, targets);
-    // Then
-    expect(rules.js.addTarget).toHaveBeenCalledTimes(1);
-    expect(rules.js.addTarget).toHaveBeenCalledWith(otherTarget);
-    expect(rules.scss.addTarget).toHaveBeenCalledTimes(1);
-    expect(rules.scss.addTarget).toHaveBeenCalledWith(otherTarget);
-    expect(rules.fonts.common.addTarget).toHaveBeenCalledTimes(1);
-    expect(rules.fonts.common.addTarget).toHaveBeenCalledWith(otherTarget);
-    expect(rules.fonts.svg.addTarget).toHaveBeenCalledTimes(1);
-    expect(rules.fonts.svg.addTarget).toHaveBeenCalledWith(otherTarget);
-    expect(rules.images.addTarget).toHaveBeenCalledTimes(1);
-    expect(rules.images.addTarget).toHaveBeenCalledWith(otherTarget);
-  });
-
   it('shouldn\'t update a target Babel configuration if the framework setting is invalid', () => {
     // Given
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = 'babelHelper';
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -242,7 +70,7 @@ describe('plugin:projextReact/main', () => {
     // When
     sut = new ProjextReactPlugin();
     sut.register(app);
-    [, [, reducer]] = events.on.mock.calls;
+    [[, reducer]] = events.on.mock.calls;
     result = reducer(initialBabelConfiguration, { target });
     // Then
     expect(result).toBe(initialBabelConfiguration);
@@ -253,14 +81,12 @@ describe('plugin:projextReact/main', () => {
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = {
       addPreset: jest.fn((config, name) => Object.assign({}, config, { preset: name })),
       addPlugin: jest.fn((config, name) => Object.assign({}, config, { plugin: name })),
     };
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -282,7 +108,7 @@ describe('plugin:projextReact/main', () => {
     // When
     sut = new ProjextReactPlugin();
     sut.register(app);
-    [, [, reducer]] = events.on.mock.calls;
+    [[, reducer]] = events.on.mock.calls;
     result = reducer(initialBabelConfiguration, target);
     // Then
     expect(result).toEqual(expectedConfigWithPlugin);
@@ -297,11 +123,9 @@ describe('plugin:projextReact/main', () => {
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = 'babelHelper';
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -319,7 +143,7 @@ describe('plugin:projextReact/main', () => {
     // When
     sut = new ProjextReactPlugin();
     sut.register(app);
-    [,, [, reducer]] = events.on.mock.calls;
+    [, [, reducer]] = events.on.mock.calls;
     result = reducer(initialExternals, { target });
     // Then
     expect(result).toEqual(initialExternals);
@@ -330,11 +154,9 @@ describe('plugin:projextReact/main', () => {
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = 'babelHelper';
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -355,7 +177,7 @@ describe('plugin:projextReact/main', () => {
     // When
     sut = new ProjextReactPlugin();
     sut.register(app);
-    [,, [, reducer]] = events.on.mock.calls;
+    [, [, reducer]] = events.on.mock.calls;
     result = reducer(initialExternals, { target });
     // Then
     expect(result).toEqual(initialExternals);
@@ -366,11 +188,9 @@ describe('plugin:projextReact/main', () => {
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = 'babelHelper';
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -391,7 +211,7 @@ describe('plugin:projextReact/main', () => {
     // When
     sut = new ProjextReactPlugin();
     sut.register(app);
-    [,, [, reducer]] = events.on.mock.calls;
+    [, [, reducer]] = events.on.mock.calls;
     result = reducer(initialExternals, { target });
     // Then
     expect(result).toEqual({
@@ -411,11 +231,9 @@ describe('plugin:projextReact/main', () => {
     const events = {
       on: jest.fn(),
     };
-    const targets = 'targets';
     const babelHelper = 'babelHelper';
     const services = {
       events,
-      targets,
       babelHelper,
     };
     const app = {
@@ -437,7 +255,7 @@ describe('plugin:projextReact/main', () => {
     // When
     sut = new ProjextReactPlugin();
     sut.register(app);
-    [,, [, reducer]] = events.on.mock.calls;
+    [, [, reducer]] = events.on.mock.calls;
     result = reducer(initialExternals, { target });
     // Then
     expect(result).toEqual({
