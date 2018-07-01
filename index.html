@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl">
+  <title data-ice="title">Home | projext-plugin-rollup-react</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Allows you to bundle a React project with projext using the Rollup build engine."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="projext-plugin-rollup-react"><meta property="twitter:description" content="Allows you to bundle a React project with projext using the Rollup build engine."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/homer0/projext-plugin-rollup-react"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/plugin.js~ProjextReactPlugin.html">ProjextReactPlugin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://homer0.github.io/projext/class/src/app/index.js~Projext.html">Projext</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="projext-plugin-for-react-on-rollup">projext plugin for React on Rollup</h1><p><a href="https://travis-ci.org/homer0/projext-plugin-rollup-react"><img src="https://img.shields.io/travis/homer0/projext-plugin-rollup-react.svg?style=flat-square" alt="Travis"></a>
+<a href="https://coveralls.io/github/homer0/projext-plugin-rollup-react?branch=master"><img src="https://img.shields.io/coveralls/github/homer0/projext-plugin-rollup-react.svg?style=flat-square" alt="Coveralls github"></a>
+<a href="https://david-dm.org/homer0/projext-plugin-rollup-react"><img src="https://img.shields.io/david/homer0/projext-plugin-rollup-react.svg?style=flat-square" alt="David"></a>
+<a href="https://david-dm.org/homer0/projext-plugin-rollup-react"><img src="https://img.shields.io/david/dev/homer0/projext-plugin-rollup-react.svg?style=flat-square" alt="David"></a></p>
+<p>Allows you to bundle a <a href="https://reactjs.org/">React</a> project with <a href="https://yarnpkg.com/en/package/projext">projext</a> using the <a href="https://rollupjs.org/">Rollup</a> <a href="https://yarnpkg.com/en/package/projext-plugin-rollup">build engine</a>.</p>
+<h2 id="introduction">Introduction</h2><p><a href="https://yarnpkg.com/en/package/projext">projext</a> allows you to configure a project without adding specific settings for a module bundler, then you can decide which build engine to use. This plugin is meant to be used when you are bundling a <a href="https://reactjs.org/">React</a> application and you are using the <a href="https://reactjs.org/">Rollup</a> <a href="https://yarnpkg.com/en/package/projext-plugin-rollup">build engine</a>.</p>
+<p>It adds the required presets to the <a href="https://babeljs.io">Babel</a> configuration in order to add support for <a href="https://facebook.github.io/jsx/"><code>JSX</code></a> code.</p>
+<h2 id="information">Information</h2><table>
+<thead>
+<tr>
+<th>-</th>
+<th>-</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Package</td>
+<td>projext-plugin-rollup-react.</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Allows you to bundle a React project with projext using the Rollup build engine.</td>
+</tr>
+<tr>
+<td>Node Version</td>
+<td>&gt;= v6.10.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="usage">Usage</h2><ol>
+<li>You first need the build engine, so install <a href="https://yarnpkg.com/en/package/projext-plugin-rollup"><code>projext-plugin-rollup</code></a>.</li>
+<li>Add a new setting to your target named <code>framework</code> and set its value to <code>react</code>.</li>
+<li>Done</li>
+</ol>
+<p>Now, when your target gets builded, the plugin will check if the target is using Rollup and if the framework is <code>react</code>, then it will make the necessary changes to bundle the <code>JSX</code> code.</p>
+<h3 id="server-side-rendering">Server side rendering</h3><blockquote>
+<p>Server side rendering (SSR) is when you render your application on the server (backend) as a string, serve it on the browser and then you app runs in order to add all the JS magic.</p>
+</blockquote>
+<p>Let&apos;s say you have a <code>backend</code> target with your Node server code, and a <code>frontend</code> target with your React code, and you want to require your <code>frontend</code> code on the <code>backend</code> in order to use <code>ReactDOM.renderToString(...)</code>:</p>
+<p>For your <code>backend</code> target you&apos;ll have to define its <code>framework</code> property to <code>react</code>, so the plugin can include the JSX loader, and then make sure you included the <code>frontend</code> target on the <code>includeTargets</code> setting:</p>
+<pre><code class="lang-js"><code class="source-code prettyprint">module.exports = {
+  targets: {
+    backend: {
+      type: &apos;node&apos;,
+      framework: &apos;react&apos;,
+      includeTargets: [&apos;frontend&apos;],
+    },
+  },
+};</code>
+</code></pre>
+<blockquote>
+<p><code>includeTargets</code> is a default setting provided by project. It tells the build engine that the files from the specified target(s) should also be transpiled/processed.</p>
+</blockquote>
+<p>Done, now you can <code>require</code>/<code>import</code> files from your <code>frontend</code> target on the <code>backend</code> target and everything will work.</p>
+<h3 id="babel">Babel</h3><p>This plugin adds the <a href="https://yarnpkg.com/en/package/babel-preset-react"><code>react</code></a> preset for JSX support, and the <a href="https://yarnpkg.com/en/package/external-helpers"><code>external-helpers</code></a> plugin, for better compatibility with Rollup.</p>
+<h3 id="external-dependencies">External dependencies</h3><p>When bundling your targets, the plugin will check if the target is for Node or if it is a browser library and automatically exclude the React packages so they don&apos;t end up on your build.</p>
+<h2 id="development">Development</h2><p>Before doing anything, install the repository hooks:</p>
+<pre><code class="lang-bash"><code class="source-code prettyprint"># You can either use npm or yarn, it doesn&apos;t matter
+yarn run hooks</code>
+</code></pre>
+<h3 id="yarn-npm-tasks">Yarn/NPM Tasks</h3><table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yarn run hooks</code></td>
+<td>Install the GIT repository hooks.</td>
+</tr>
+<tr>
+<td><code>yarn test</code></td>
+<td>Run the project unit tests.</td>
+</tr>
+<tr>
+<td><code>yarn run lint</code></td>
+<td>Lint the modified files.</td>
+</tr>
+<tr>
+<td><code>yarn run lint:full</code></td>
+<td>Lint the project code.</td>
+</tr>
+<tr>
+<td><code>yarn run docs</code></td>
+<td>Generate the project documentation.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="testing">Testing</h3><p>I use <a href="https://facebook.github.io/jest/">Jest</a> with <a href="https://yarnpkg.com/en/package/jest-ex">Jest-Ex</a> to test the project. The configuration file is on <code>./.jestrc</code>, the tests and mocks are on <code>./tests</code> and the script that runs it is on <code>./utils/scripts/test</code>.</p>
+<h3 id="linting">Linting</h3><p>I use <a href="http://eslint.org">ESlint</a> to validate all our JS code. The configuration file for the project code is on <code>./.eslintrc</code> and for the tests on <code>./tests/.eslintrc</code> (which inherits from the one on the root), there&apos;s also an <code>./.eslintignore</code> to ignore some files on the process, and the script that runs it is on <code>./utils/scripts/lint</code>.</p>
+<h3 id="documentation">Documentation</h3><p>I use <a href="http://esdoc.org">ESDoc</a> to generate HTML documentation for the project. The configuration file is on <code>./.esdocrc</code> and the script that runs it is on <code>./utils/scripts/docs</code>.</p>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
