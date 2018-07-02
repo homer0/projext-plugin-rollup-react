@@ -35,7 +35,7 @@ Now, when your target gets builded, the plugin will check if the target is using
 
 Let's say you have a `backend` target with your Node server code, and a `frontend` target with your React code, and you want to require your `frontend` code on the `backend` in order to use `ReactDOM.renderToString(...)`:
 
-For your `backend` target you'll have to define its `framework` property to `react`, so the plugin can include the JSX loader, and then make sure you included the `frontend` target on the `includeTargets` setting:
+For your `backend` target you'll have to define its `framework` property to `react`, so the plugin can include the JSX preset, and then make sure you included the `frontend` target on the `includeTargets` setting:
 
 ```js
 module.exports = {
@@ -55,7 +55,7 @@ Done, now you can `require`/`import` files from your `frontend` target on the `b
 
 ### Babel
 
-This plugin adds the [`react`](https://yarnpkg.com/en/package/babel-preset-react) preset for JSX support, and the [`external-helpers`](https://yarnpkg.com/en/package/external-helpers) plugin, for better compatibility with Rollup.
+This plugin adds the [`react`](https://yarnpkg.com/en/package/babel-preset-react) preset for JSX support.
 
 ### External dependencies
 
