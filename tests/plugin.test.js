@@ -83,7 +83,6 @@ describe('plugin:projextReact/main', () => {
     };
     const babelHelper = {
       addPreset: jest.fn((config, name) => Object.assign({}, config, { preset: name })),
-      addPlugin: jest.fn((config, name) => Object.assign({}, config, { plugin: name })),
     };
     const services = {
       events,
@@ -99,11 +98,8 @@ describe('plugin:projextReact/main', () => {
     let sut = null;
     let reducer = null;
     let result = null;
-    const expectedConfigWithPreset = Object.assign({}, initialBabelConfiguration, {
+    const expectedConfig = Object.assign({}, initialBabelConfiguration, {
       preset: 'react',
-    });
-    const expectedConfigWithPlugin = Object.assign({}, expectedConfigWithPreset, {
-      plugin: 'external-helpers',
     });
     // When
     sut = new ProjextReactPlugin();
@@ -111,11 +107,9 @@ describe('plugin:projextReact/main', () => {
     [[, reducer]] = events.on.mock.calls;
     result = reducer(initialBabelConfiguration, target);
     // Then
-    expect(result).toEqual(expectedConfigWithPlugin);
+    expect(result).toEqual(expectedConfig);
     expect(babelHelper.addPreset).toHaveBeenCalledTimes(1);
     expect(babelHelper.addPreset).toHaveBeenCalledWith(initialBabelConfiguration, 'react');
-    expect(babelHelper.addPlugin).toHaveBeenCalledTimes(1);
-    expect(babelHelper.addPlugin).toHaveBeenCalledWith(expectedConfigWithPreset, 'external-helpers');
   });
 
   it('shouldn\'t modify a target externals if the framework setting is invalid', () => {

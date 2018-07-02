@@ -7,8 +7,7 @@
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
   "license": "MIT",
   "dependencies": {
-    "babel-preset-react": "6.24.1",
-    "babel-plugin-external-helpers": "6.22.0"
+    "babel-preset-react": "6.24.1"
   },
   "devDependencies": {
     "wootils": "^1.3.2",

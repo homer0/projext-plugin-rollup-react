@@ -35,13 +35,6 @@ class ProjextReactPlugin {
      */
     this._babelConfigurationEvent = 'babel-configuration';
     /**
-     * The required Babel plugin for the JSX integration of with Rollup.
-     * @type {string}
-     * @access protected
-     * @ignore
-     */
-    this._babelPlugin = 'external-helpers';
-    /**
      * The name of the Babel preset required to add support for React's JSX.
      * @type {string}
      * @access protected
@@ -80,7 +73,7 @@ class ProjextReactPlugin {
   }
   /**
    * This method gets called when projext reduces a target Babel configuration. The method will
-   * validate the target settings and add the Babel plugins needed for JSX.
+   * validate the target settings and add the Babel preset needed for JSX.
    * @param {Object}      currentConfiguration The current Babel configuration for the target.
    * @param {Target}      target               The target information.
    * @param {BabelHelper} babelHelper          To update the target configuration and add the
@@ -93,7 +86,6 @@ class ProjextReactPlugin {
     let updatedConfiguration;
     if (target.framework === this._frameworkProperty) {
       updatedConfiguration = babelHelper.addPreset(currentConfiguration, this._babelPreset);
-      updatedConfiguration = babelHelper.addPlugin(updatedConfiguration, this._babelPlugin);
     } else {
       updatedConfiguration = currentConfiguration;
     }
