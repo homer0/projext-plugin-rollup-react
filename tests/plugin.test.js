@@ -99,7 +99,7 @@ describe('plugin:projextReact/main', () => {
     let reducer = null;
     let result = null;
     const expectedConfig = Object.assign({}, initialBabelConfiguration, {
-      preset: 'react',
+      preset: '@babel/preset-react',
     });
     // When
     sut = new ProjextReactPlugin();
@@ -109,7 +109,10 @@ describe('plugin:projextReact/main', () => {
     // Then
     expect(result).toEqual(expectedConfig);
     expect(babelHelper.addPreset).toHaveBeenCalledTimes(1);
-    expect(babelHelper.addPreset).toHaveBeenCalledWith(initialBabelConfiguration, 'react');
+    expect(babelHelper.addPreset).toHaveBeenCalledWith(
+      initialBabelConfiguration,
+      '@babel/preset-react'
+    );
   });
 
   it('shouldn\'t modify a target externals if the framework setting is invalid', () => {
