@@ -40,7 +40,7 @@ class ProjextReactPlugin {
      * @access protected
      * @ignore
      */
-    this._babelPreset = 'react';
+    this._babelPreset = '@babel/preset-react';
     /**
      * The required value a target `framework` setting needs to have in order for the service to
      * take action.
