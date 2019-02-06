@@ -55,7 +55,7 @@ Done, now you can `require`/`import` files from your `frontend` target on the `b
 
 ### Babel
 
-This plugin adds the [`react`](https://yarnpkg.com/en/package/babel-preset-react) preset for JSX support.
+This plugin adds the [`react`](https://yarnpkg.com/en/package/@babel/preset-react) preset for JSX support.
 
 ### External dependencies
 
