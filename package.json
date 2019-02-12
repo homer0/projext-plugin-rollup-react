@@ -2,31 +2,32 @@
   "name": "projext-plugin-rollup-react",
   "description": "Allows you to bundle a React project with projext using the Rollup build engine.",
   "homepage": "https://homer0.github.io/projext-plugin-rollup-react/",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "repository": "homer0/projext-plugin-rollup-react",
   "author": "Leonardo Apiwan (@homer0) <me@homer0.com>",
   "license": "MIT",
   "dependencies": {
-    "babel-preset-react": "6.24.1"
+    "@babel/preset-react": "^7.0.0",
+    "@babel/core": "7.2.2"
   },
   "devDependencies": {
-    "wootils": "^1.3.2",
-    "eslint": "4.19.1",
-    "eslint-config-airbnb-base": "13.0.0",
-    "eslint-plugin-import": "2.12.0",
-    "eslint-plugin-node": "6.0.1",
-    "babel-preset-env": "1.7.0",
-    "jest-ex": "5.0.0",
-    "jest-cli": "23.1.0",
-    "jasmine-expect": "3.8.3",
+    "wootils": "^2.0.0",
+    "eslint": "5.13.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-plugin-import": "2.16.0",
+    "eslint-plugin-node": "8.0.1",
+    "@babel/preset-env": "7.3.1",
+    "jest-ex": "6.0.0",
+    "jest-cli": "24.0.0",
+    "jasmine-expect": "4.0.1",
     "esdoc": "1.1.0",
     "esdoc-standard-plugin": "1.0.0",
-    "esdoc-node": "1.0.3",
-    "coveralls": "3.0.1"
+    "esdoc-node": "1.0.4",
+    "coveralls": "3.0.2"
   },
   "engine-strict": true,
   "engines": {
-    "node": ">=6.0.0",
+    "node": ">=8.0.0",
     "npm": ">=3.0.0"
   },
   "main": "src/index.js",
