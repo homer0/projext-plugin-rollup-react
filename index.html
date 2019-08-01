@@ -60,7 +60,7 @@
 </tr>
 <tr>
 <td>Node Version</td>
-<td>&gt;= v6.10.0</td>
+<td>&gt;= v8.0.0</td>
 </tr>
 </tbody>
 </table>
@@ -74,7 +74,7 @@
 <p>Server side rendering (SSR) is when you render your application on the server (backend) as a string, serve it on the browser and then you app runs in order to add all the JS magic.</p>
 </blockquote>
 <p>Let&apos;s say you have a <code>backend</code> target with your Node server code, and a <code>frontend</code> target with your React code, and you want to require your <code>frontend</code> code on the <code>backend</code> in order to use <code>ReactDOM.renderToString(...)</code>:</p>
-<p>For your <code>backend</code> target you&apos;ll have to define its <code>framework</code> property to <code>react</code>, so the plugin can include the JSX loader, and then make sure you included the <code>frontend</code> target on the <code>includeTargets</code> setting:</p>
+<p>For your <code>backend</code> target you&apos;ll have to define its <code>framework</code> property to <code>react</code>, so the plugin can include the JSX preset, and then make sure you included the <code>frontend</code> target on the <code>includeTargets</code> setting:</p>
 <pre><code class="lang-js"><code class="source-code prettyprint">module.exports = {
   targets: {
     backend: {
@@ -89,13 +89,9 @@
 <p><code>includeTargets</code> is a default setting provided by project. It tells the build engine that the files from the specified target(s) should also be transpiled/processed.</p>
 </blockquote>
 <p>Done, now you can <code>require</code>/<code>import</code> files from your <code>frontend</code> target on the <code>backend</code> target and everything will work.</p>
-<h3 id="babel">Babel</h3><p>This plugin adds the <a href="https://yarnpkg.com/en/package/babel-preset-react"><code>react</code></a> preset for JSX support, and the <a href="https://yarnpkg.com/en/package/external-helpers"><code>external-helpers</code></a> plugin, for better compatibility with Rollup.</p>
+<h3 id="babel">Babel</h3><p>This plugin adds the <a href="https://yarnpkg.com/en/package/@babel/preset-react"><code>react</code></a> preset for JSX support.</p>
 <h3 id="external-dependencies">External dependencies</h3><p>When bundling your targets, the plugin will check if the target is for Node or if it is a browser library and automatically exclude the React packages so they don&apos;t end up on your build.</p>
-<h2 id="development">Development</h2><p>Before doing anything, install the repository hooks:</p>
-<pre><code class="lang-bash"><code class="source-code prettyprint"># You can either use npm or yarn, it doesn&apos;t matter
-yarn run hooks</code>
-</code></pre>
-<h3 id="yarn-npm-tasks">Yarn/NPM Tasks</h3><table>
+<h2 id="development">Development</h2><h3 id="yarn-npm-tasks">Yarn/NPM Tasks</h3><table>
 <thead>
 <tr>
 <th>Task</th>
@@ -103,10 +99,6 @@ yarn run hooks</code>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>yarn run hooks</code></td>
-<td>Install the GIT repository hooks.</td>
-</tr>
 <tr>
 <td><code>yarn test</code></td>
 <td>Run the project unit tests.</td>
