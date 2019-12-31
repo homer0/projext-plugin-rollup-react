@@ -19,7 +19,7 @@ It adds the required presets to the [Babel](https://babeljs.io) configuration in
 |--------------|----------------------------------------------------------------------------------------|
 | Package      | projext-plugin-rollup-react.                                                           |
 | Description  | Allows you to bundle a React project with projext using the Rollup build engine.       |
-| Node Version | >= v8.0.0                                                                             |
+| Node Version | >= v10.13.0                                                                            |
 
 ## Usage
 
